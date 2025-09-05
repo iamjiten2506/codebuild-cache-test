@@ -2,13 +2,13 @@ version: 0.2
 
 cache:
   paths:
-    - '/root/go/pkg/mod/**/*'  # Go modules cache
-    - '/root/.cache/go-build/**/*'  # Go build cache
+    - '/root/go/pkg/mod/**/*'
+    - '/root/.cache/go-build/**/*'
 
 phases:
   install:
     runtime-versions:
-      golang: 1.24
+      golang: 1.23
       nodejs: 22
       python: 3.13
     commands:
@@ -16,7 +16,7 @@ phases:
       - apt-get clean || true
       - df -h
       
-      # Configure Go environment and cache paths
+      # Configure Go environment
       - echo "Setting up Go environment..."
       - go version
       - export GOMODCACHE=/root/go/pkg/mod
@@ -38,12 +38,10 @@ phases:
       - echo "Setting up Python environment..."
       - python3 --version
       - which python3
+
   pre_build:
     commands:
       - echo "Cache paths configured for Go modules and build cache"
-      - chmod +x bloat-cache.sh
-      - ./bloat-cache.sh
-      - echo "=== AFTER CACHE BLOAT ==="
       - |
         USAGE=$(df / | awk 'NR==2 {print $5}' | sed 's/%//')
         echo "Current disk usage: ${USAGE}%"
@@ -62,6 +60,8 @@ phases:
   build:
     commands:
       - echo "Build phase handled by GitHub Actions workflow"
+
   post_build:
     commands:
       - echo "Post-build phase complete"
+      - df -h
