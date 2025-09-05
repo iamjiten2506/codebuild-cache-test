@@ -2,46 +2,46 @@ version: 0.2
 
 cache:
   paths:
-    - '/root/go/pkg/mod/**/*'
-    - '/root/.cache/go-build/**/*'
+    - '/root/go/pkg/mod/**/*'  # Go modules cache
+    - '/root/.cache/go-build/**/*'  # Go build cache
 
 phases:
   install:
+    runtime-versions:
+      golang: 1.24
+      nodejs: 22
+      python: 3.13
     commands:
-      - echo "=== Initial Setup ==="
       - df -h
+      
+      # Configure Go environment and cache paths
+      - echo "Setting up Go environment..."
       - go version
       - export GOMODCACHE=/root/go/pkg/mod
       - export GOCACHE=/root/.cache/go-build
-      - mkdir -p /root/go/pkg/mod /root/.cache/go-build
-
+      - export GOTMPDIR=/root/go-tmp
+      - mkdir -p /root/go/pkg/mod /root/.cache/go-build $GOTMPDIR
+      - echo "GOMODCACHE=/root/go/pkg/mod" >> /etc/environment
+      - echo "GOCACHE=/root/.cache/go-build" >> /etc/environment
+      - echo "GOTMPDIR=/root/go-tmp" >> /etc/environment
+      
+      # Setup Node.js environment  
+      - echo "Setting up Node.js environment..."
+      - node --version
+      - npm --version
+      - npm install -g yarn
+      - yarn --version
+      
+      # Verify Python environment
+      - echo "Setting up Python environment..."
+      - python3 --version
+      - which python3
   pre_build:
     commands:
-      - |
-        USAGE=$(df / | awk 'NR==2 {print $5}' | sed 's/%//')
-        echo "Current disk usage: ${USAGE}%"
-        if [ $USAGE -gt 70 ]; then
-          echo "WARNING: Disk usage above 70% threshold"
-          echo "Before cleanup:"
-          du -hs /mce-cache/* 2>/dev/null || echo "No cache found"
-          rm -rf /mce-cache/*
-          echo "Cache cleanup completed"
-          echo "After cleanup:"
-          df -h /
-        else
-          echo "Disk usage within acceptable limits"
-        fi
-
+      - echo "Cache paths configured for Go modules and build cache"
   build:
     commands:
-      - echo "=== Building Go Application ==="
-      - go mod download
-      - go build -o app main.go
-      - echo "Build completed successfully"
-
+      - echo "Build phase handled by GitHub Actions workflow"
   post_build:
     commands:
-      - echo "=== Final Status ==="
-      - df -h
-      - du -sh /mce-cache/* 2>/dev/null || echo "No cache directories found"
-      - echo "Build process completed"
+      - echo "Post-build phase complete"
