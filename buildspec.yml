@@ -12,8 +12,6 @@ phases:
       nodejs: 22
       python: 3.13
     commands:
-      - docker system prune -af --volumes
-      - apt-get clean || true
       - df -h
       
       # Configure Go environment and cache paths
