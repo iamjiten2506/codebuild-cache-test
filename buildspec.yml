@@ -8,24 +8,40 @@ cache:
 phases:
   install:
     commands:
+      - echo "=== Initial Setup ==="
       - df -h
-      - echo "=== INITIAL DISK USAGE ==="
-      
+      - go version
+      - export GOMODCACHE=/root/go/pkg/mod
+      - export GOCACHE=/root/.cache/go-build
+      - mkdir -p /root/go/pkg/mod /root/.cache/go-build
+
   pre_build:
     commands:
-      # Simulate cache bloat (remove this after testing)
-      - chmod +x bloat-cache.sh
-      - ./bloat-cache.sh
-      - echo "=== AFTER CACHE BLOAT ==="
-      - df -h
-      
+      - |
+        USAGE=$(df / | awk 'NR==2 {print $5}' | sed 's/%//')
+        echo "Current disk usage: ${USAGE}%"
+        if [ $USAGE -gt 70 ]; then
+          echo "WARNING: Disk usage above 70% threshold"
+          echo "Before cleanup:"
+          du -hs /mce-cache/* 2>/dev/null || echo "No cache found"
+          rm -rf /mce-cache/*
+          echo "Cache cleanup completed"
+          echo "After cleanup:"
+          df -h /
+        else
+          echo "Disk usage within acceptable limits"
+        fi
+
   build:
     commands:
+      - echo "=== Building Go Application ==="
       - go mod download
       - go build -o app main.go
-      
+      - echo "Build completed successfully"
+
   post_build:
     commands:
-      - echo "=== FINAL DISK USAGE ==="
+      - echo "=== Final Status ==="
       - df -h
-      - find /root/.cache/go-build -type f | wc -l || echo "Cache files count failed"
+      - du -sh /mce-cache/* 2>/dev/null || echo "No cache directories found"
+      - echo "Build process completed"
