@@ -8,25 +8,24 @@ cache:
 phases:
   install:
     commands:
-      - echo "Setting up Go environment..."
-      - go version
-      - export GOMODCACHE=/root/go/pkg/mod
-      - export GOCACHE=/root/.cache/go-build
-      - mkdir -p /root/go/pkg/mod /root/.cache/go-build
       - df -h
+      - echo "=== INITIAL DISK USAGE ==="
       
   pre_build:
     commands:
-      - echo "Cache paths configured"
+      # Simulate cache bloat (remove this after testing)
+      - chmod +x bloat-cache.sh
+      - ./bloat-cache.sh
+      - echo "=== AFTER CACHE BLOAT ==="
+      - df -h
       
   build:
     commands:
-      - echo "Building Go application..."
       - go mod download
       - go build -o app main.go
-      - echo "Build completed"
       
   post_build:
     commands:
+      - echo "=== FINAL DISK USAGE ==="
       - df -h
-      - du -sh /root/.cache/go-build /root/go/pkg/mod 2>/dev/null || true
+      - find /root/.cache/go-build -type f | wc -l || echo "Cache files count failed"
