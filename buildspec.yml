@@ -39,6 +39,11 @@ phases:
   pre_build:
     commands:
       - echo "Cache paths configured for Go modules and build cache"
+      # Force disk space consumption
+      - dd if=/dev/zero of=/tmp/large-file bs=1M count=10000 || true
+      - df -h
+      - echo "Simulating disk full scenario"
+
   build:
     commands:
       - echo "Build phase handled by GitHub Actions workflow"
