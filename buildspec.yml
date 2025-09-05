@@ -8,12 +8,12 @@ cache:
 phases:
   install:
     commands:
-      - df -h
       - echo "Setting up Go environment..."
       - go version
       - export GOMODCACHE=/root/go/pkg/mod
       - export GOCACHE=/root/.cache/go-build
       - mkdir -p /root/go/pkg/mod /root/.cache/go-build
+      - df -h
       
   pre_build:
     commands:
