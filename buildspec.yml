@@ -1,0 +1,32 @@
+version: 0.2
+
+cache:
+  paths:
+    - '/root/go/pkg/mod/**/*'
+    - '/root/.cache/go-build/**/*'
+
+phases:
+  install:
+    commands:
+      - df -h
+      - echo "Setting up Go environment..."
+      - go version
+      - export GOMODCACHE=/root/go/pkg/mod
+      - export GOCACHE=/root/.cache/go-build
+      - mkdir -p /root/go/pkg/mod /root/.cache/go-build
+      
+  pre_build:
+    commands:
+      - echo "Cache paths configured"
+      
+  build:
+    commands:
+      - echo "Building Go application..."
+      - go mod download
+      - go build -o app main.go
+      - echo "Build completed"
+      
+  post_build:
+    commands:
+      - df -h
+      - du -sh /root/.cache/go-build /root/go/pkg/mod 2>/dev/null || true
