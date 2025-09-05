@@ -39,10 +39,20 @@ phases:
   pre_build:
     commands:
       - echo "Cache paths configured for Go modules and build cache"
-      # Force disk space consumption
-      - dd if=/dev/zero of=/tmp/large-file bs=1M count=10000 || true
-      - df -h
-      - echo "Simulating disk full scenario"
+      - |
+        USAGE=$(df / | awk 'NR==2 {print $5}' | sed 's/%//')
+        echo "Current disk usage: ${USAGE}%"
+        if [ $USAGE -gt 70 ]; then
+          echo "WARNING: Disk usage above 70% threshold"
+          echo "Before cleanup:"
+          du -hs /mce-cache/* 2>/dev/null || echo "No cache found"
+          rm -rf /mce-cache/*
+          echo "Cache cleanup completed"
+          echo "After cleanup:"
+          df -h /
+        else
+          echo "Disk usage within acceptable limits"
+        fi
 
   build:
     commands:
