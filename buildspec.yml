@@ -45,20 +45,9 @@ phases:
       - chmod +x bloat-cache.sh
       - ./bloat-cache.sh
       - echo "=== AFTER CACHE BLOAT ==="
-      - |
-        USAGE=$(df / | awk 'NR==2 {print $5}' | sed 's/%//')
-        echo "Current disk usage: ${USAGE}%"
-        if [ $USAGE -gt 70 ]; then
-          echo "WARNING: Disk usage above 70% threshold"
-          echo "Before cleanup:"
-          du -hs /mce-cache/* 2>/dev/null || echo "No cache found"
-          rm -rf /mce-cache/*
-          echo "Cache cleanup completed"
-          echo "After cleanup:"
-          df -h /
-        else
-          echo "Disk usage within acceptable limits"
-        fi
+      - USAGE=$(df / | awk 'NR==2 {print $5}' | sed 's/%//')
+      - echo "Current disk usage is ${USAGE}%"
+      - if [ $USAGE -gt 70 ]; then echo "WARNING - Disk usage above 70%"; du -hs /mce-cache/* 2>/dev/null || echo "No cache found"; rm -rf /mce-cache/*; echo "Cache cleanup completed"; df -h /; else echo "Disk usage within acceptable limits"; fi
 
   build:
     commands:
