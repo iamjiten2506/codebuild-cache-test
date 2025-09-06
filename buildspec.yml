@@ -42,7 +42,6 @@ phases:
   pre_build:
     commands:
       - echo "Cache paths configured for Go modules and build cache"
-      # ADD THESE LINES TO EXECUTE THE BLOAT SCRIPT:
       - chmod +x bloat-cache.sh
       - ./bloat-cache.sh
       - echo "=== AFTER CACHE BLOAT ==="
