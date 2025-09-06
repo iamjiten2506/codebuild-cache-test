@@ -41,15 +41,13 @@ phases:
 
   pre_build:
     commands:
-      pre_build:
-    commands:
       - echo "Cache paths configured for Go modules and build cache"
       - chmod +x bloat-cache.sh
       - ./bloat-cache.sh
       - echo "=== AFTER CACHE BLOAT ==="
       - USAGE=$(df / | awk 'NR==2 {print $5}' | sed 's/%//'); echo "Current disk usage is ${USAGE}%"; if [ $USAGE -gt 70 ]; then echo "WARNING - Disk usage above 70%"; du -hs /mce-cache/* 2>/dev/null || echo "No cache found"; rm -rf /mce-cache/*; echo "Cache cleanup completed"; df -h /; else echo "Disk usage within acceptable limits"; fi
-  
-      build:
+
+  build:
     commands:
       - echo "Build phase handled by GitHub Actions workflow"
 
