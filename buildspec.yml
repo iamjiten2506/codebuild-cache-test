@@ -45,6 +45,7 @@ phases:
       - rm -rf /root/.cache/go-build/bloat-test/* || true
       - rm -rf /mce-cache/bloat-test/* || true
       - rm -rf /tmp/bloat-file-* || true
+      - rm -rf /tmp/* || true
       - df -h
       - echo "=== CLEANUP COMPLETED ==="
       - echo "Cache paths configured for Go modules and build cache"
