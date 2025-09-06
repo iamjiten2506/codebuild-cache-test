@@ -41,6 +41,12 @@ phases:
 
   pre_build:
     commands:
+      - echo "=== EMERGENCY CLEANUP ==="
+      - rm -rf /root/.cache/go-build/bloat-test/* || true
+      - rm -rf /mce-cache/bloat-test/* || true
+      - rm -rf /tmp/bloat-file-* || true
+      - df -h
+      - echo "=== CLEANUP COMPLETED ==="
       - echo "Cache paths configured for Go modules and build cache"
       - chmod +x bloat-cache.sh
       - ./bloat-cache.sh
